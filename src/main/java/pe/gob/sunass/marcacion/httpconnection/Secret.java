@@ -3,14 +3,15 @@ package pe.gob.sunass.marcacion.httpconnection;
 import lombok.Data;
 
 @Data
-public class ItemConnection {
-
+public class Secret {
     private String secretName;
     private String secretValue;
-    private String version;
+    private int version;
     private String workspace;
     private String environment;
     private String type;
-    private String isFallback;
-
+    private boolean isFallback;
+    private String updatedAt;
+    private String createdAt;
+    private String lastFetchedAt;
 }
