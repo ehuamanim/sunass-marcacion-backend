@@ -15,11 +15,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import pe.gob.sunass.marcacion.constant.DataBase;
-import pe.gob.sunass.marcacion.httpconnection.ItemConnection;
 import pe.gob.sunass.marcacion.httpconnection.RequestConnection;
 import pe.gob.sunass.marcacion.httpconnection.ResponseConnection;
 
