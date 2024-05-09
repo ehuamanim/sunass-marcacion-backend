@@ -1,82 +1,80 @@
 package pe.gob.sunass.marcacion.config;
 
-import java.io.IOException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.client.RestTemplate;
 
+import jakarta.persistence.EntityManagerFactory;
 import pe.gob.sunass.marcacion.constant.DataBase;
+import pe.gob.sunass.marcacion.constant.PropertiesConstant;
 import pe.gob.sunass.marcacion.httpconnection.RequestConnection;
-import pe.gob.sunass.marcacion.httpconnection.ResponseConnection;
+import pe.gob.sunass.marcacion.httpconnection.SecretList;
+import pe.gob.sunass.marcacion.httpconnection.SunassRequest;
+import pe.gob.sunass.marcacion.httpconnection.facade.SecretFacade;
 
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
 		entityManagerFactoryRef= "dbEntityManagerFactory", 
 		transactionManagerRef = "dbTransactionManager",
-		basePackages = {"pe.sob.sunass.marcacion.repository"})
+		basePackages = {"pe.gob.sunass.marcacion.repository"})
 public class DbMarcacion {
 
-    @Value("${db.datasource.remote-secret-ops}")
-    private String url;
-
-    @Value("${db.datasource.token}")
-    private String token;
-
-    @Value("${db.datasource.environment}")
-    private String env;
-
-    @Value("${db.datasource.driver-class-name}")
-    private String dsDriverClassname;
-
-    @Value("${db.jpa.database-platform}")
-    private String dsDbPlatform;
-
-    @Value("${db.jpa.show-sql}")
-    private String dsShowSql;
-
+    @Autowired
+    private PropertiesConstant props;
 
     @Bean(name="dbDs")
 	@ConfigurationProperties(prefix="db.datasource")
 	public DataSource dataSource() throws Exception {
-
-        RequestConnection requestBody = new RequestConnection( token, env );
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<RequestConnection> request = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<ResponseConnection> response = restTemplate.postForEntity(url, request, ResponseConnection.class);
-        ResponseConnection responseConnection = response.getBody();
+        SunassRequest<String> sunreq = new SunassRequest<>(props.getUrl());
+        RequestConnection requestBody = new RequestConnection( props.getToken(), props.getEnv() );
+        String response = sunreq.postConnection(requestBody, String.class);
         
-        if (responseConnection == null) {
-            throw new IllegalArgumentException("data cannot be null");
-        }
-
-        
-        String jdbcUrl = responseConnection.getItemFromName(DataBase.CNX_STRING.value()).getSecretValue();
-        String username = responseConnection.getItemFromName(DataBase.USERNAME.value()).getSecretValue();
-        String password = responseConnection.getItemFromName(DataBase.PASSWORD.value()).getSecretValue();
-
-        System.err.println( responseConnection.toString() );
+        SecretList secretList = SecretFacade.parseToList(response);
+        // String jdbcUrl  = SecretFacade.getValueFromName(secretList, DataBase.CNX_STRING);
+        String jdbcUrl  = "jdbc:oracle:thin:@10.10.3.73:1521:trass";
+        String username = SecretFacade.getValueFromName(secretList, DataBase.USERNAME);
+        String password = SecretFacade.getValueFromName(secretList, DataBase.PASSWORD);
 
         return DataSourceBuilder.create()
                   .url( jdbcUrl )
 				  .username( username )
 				  .password( password )
-				  .driverClassName(dsDriverClassname).build();
+				  .driverClassName(props.getDriverClassname()).build();
     }
 
+    @Bean(name = "dbEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataSource());
+        em.setPackagesToScan(props.getPackageToScan());
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(false);
+        vendorAdapter.setDatabasePlatform( props.getDbPlatform() );
+
+        em.setJpaVendorAdapter(vendorAdapter);
+
+        return em;
+    }
+
+    @Bean(name="dbTransactionManager")
+	public PlatformTransactionManager platformTransactionManager(@Qualifier("dbEntityManagerFactory") EntityManagerFactory entityManagerFactory){
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
+	}
 }
