@@ -66,7 +66,8 @@ import jakarta.persistence.*;
             + " LEFT JOIN \"personal_tipodoc\" ptd ON ptd.\"tipo_doc_id\" = prs.\"tipo_doc_id\" "
             + " LEFT JOIN \"institucion_sede\" isd ON uor.\"sede_id\" = isd.\"sede_id\" "
             + " WHERE "
-            + " (:nroDoc IS NULL OR prs.\"nro_doc\" = :nroDoc) ",
+            + " (:nroDoc IS NULL OR prs.\"nro_doc\" = :nroDoc) "
+            + " ORDER BY trabajador asc ",
     resultSetMapping = "PersonalDtoMapping"
 )
 public class Personal {

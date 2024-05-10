@@ -37,7 +37,6 @@ public class DbMarcacion {
     private PropertiesConstant props;
 
     @Bean(name="dbDs")
-	@ConfigurationProperties(prefix="db.datasource")
 	public DataSource dataSource() throws Exception {
         SunassRequest<String> sunreq = new SunassRequest<>(props.getUrl());
         RequestConnection requestBody = new RequestConnection( props.getToken(), props.getEnv() );
