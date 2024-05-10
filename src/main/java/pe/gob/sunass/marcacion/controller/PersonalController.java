@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.gob.sunass.marcacion.dto.AsignacionPersonalRestIn;
+import pe.gob.sunass.marcacion.dto.BaseResponseDto;
 import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.facade.PersonalFacade;
 import pe.gob.sunass.marcacion.httpconnection.restin.AuthRestIn;
@@ -63,5 +65,11 @@ public class PersonalController {
         PersonalDto personal = personalService.findAllByNroDoc( auth.getUsuario() );
         personalFacade.endSesion(personal);
         return personal;
+    }
+
+    @PostMapping("/asignacion")
+    public BaseResponseDto asignacion(@RequestBody  AsignacionPersonalRestIn asignacion) {
+        BaseResponseDto resp = personalService.guardarAsignacion( asignacion );
+        return resp;
     }
 }

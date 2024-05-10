@@ -8,7 +8,6 @@ public class MarcacionApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MarcacionApplication.class, args);
-		
 	}
 
 }

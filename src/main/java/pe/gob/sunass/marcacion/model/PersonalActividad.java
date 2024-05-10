@@ -13,6 +13,8 @@ public class PersonalActividad {
 
     @Id
     @Column(name = "\"item\"", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PERSONAL_ACTIVIDAD")
+    @SequenceGenerator(name = "SEQ_PERSONAL_ACTIVIDAD", sequenceName = "SEQ_PERSONAL_ACTIVIDAD", allocationSize = 1)
     private Long item;
 
     @Column(name = "\"personal_id\"", length = 5)
@@ -35,18 +37,18 @@ public class PersonalActividad {
     @Column(name = "\"flag\"", length = 1)
     private String flag;
 
-    @Column(name = "\"user_reg\"", length = 20)
+    @Column(name = "\"userReg\"", length = 20)
     private String userReg;
 
     @Temporal( TemporalType.TIMESTAMP )
-    @Column(name = "\"fec_reg\"")
+    @Column(name = "\"fecReg\"")
     private Date fecReg;
 
-    @Column(name = "\"user_mod\"", length = 20)
+    @Column(name = "\"userMod\"", length = 20)
     private String userMod;
 
     @Temporal( TemporalType.TIMESTAMP )
-    @Column(name = "\"fec_mod\"")
+    @Column(name = "\"fecMod\"")
     private Date fecMod;
 
 }

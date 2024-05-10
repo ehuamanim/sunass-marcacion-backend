@@ -13,6 +13,8 @@ public class PersonalRemoto {
 
     @Id
     @Column(name = "\"item\"")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PERSONAL_REMOTO")
+    @SequenceGenerator(name = "SEQ_PERSONAL_REMOTO", sequenceName = "SEQ_PERSONAL_REMOTO", allocationSize = 1)
     private Long item;
 
     @Column(name = "\"personal_id\"", length = 5)
@@ -37,15 +39,15 @@ public class PersonalRemoto {
     @Column(name = "\"flag\"", length = 1)
     private String flag;
 
-    @Column(name = "\"user_reg\"", length = 20)
+    @Column(name = "\"userReg\"", length = 20)
     private String userReg;
 
-    @Column(name = "\"fec_reg\"")
+    @Column(name = "\"fecReg\"")
     private Date fecReg;
 
-    @Column(name = "\"user_mod\"", length = 20)
+    @Column(name = "\"userMod\"", length = 20)
     private String userMod;
 
-    @Column(name = "\"fec_mod\"")
+    @Column(name = "\"fecMod\"")
     private Date fecMod;
 }

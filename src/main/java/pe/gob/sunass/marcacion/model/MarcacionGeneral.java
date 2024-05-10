@@ -21,7 +21,7 @@ public class MarcacionGeneral {
     @Id
     @Column(name = "\"item\"", nullable = false, precision = 11)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MARCACION_GENERAL")
-    @SequenceGenerator(name = "SEQ_MARCACION_GENERAL", sequenceName = "\"SEQ_MARCACION_GENERAL\"", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_MARCACION_GENERAL", sequenceName = "SEQ_MARCACION_GENERAL", allocationSize = 1)
     private Long item;
 
     @Column(name = "\"pers_codigo\"", length = 4)
