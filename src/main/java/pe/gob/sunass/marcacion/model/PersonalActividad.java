@@ -3,12 +3,50 @@ package pe.gob.sunass.marcacion.model;
 import jakarta.persistence.*;
 
 import lombok.Data;
+import pe.gob.sunass.marcacion.dto.PersonalActividadDto;
+import pe.gob.sunass.marcacion.dto.PersonalDto;
 
 import java.util.Date;
 
 @Data
 @Entity
 @Table(name = "\"personal_actividad\"", schema = "MARCAREMOTO")
+@SqlResultSetMapping(
+    name = "PersonalActividadDtoMapping",
+    classes = @ConstructorResult(
+        targetClass = PersonalActividadDto.class,
+        columns = {
+			@ColumnResult(name = "item"),
+			@ColumnResult(name = "personalId"),
+			@ColumnResult(name = "actividadId"),
+			@ColumnResult(name = "fechaInicio"),
+			@ColumnResult(name = "actividad"),
+			@ColumnResult(name = "userReg"),
+			@ColumnResult(name = "nroDoc")
+        }
+    )
+)
+@NamedNativeQuery(
+	    name = "findActividadesAsignadas",
+	    query = "SELECT "
+	    		+ "	pa.\"item\" 		AS item, "
+	    		+ "	pa.\"personal_id\"	AS personalId, "
+	    		+ "	pa.\"actividad_id\"	AS actividadId, "
+	    		+ "	pa.\"fecha_inicio\"	AS fechaInicio, "
+	    		+ "	a.\"descripcion\" 	AS actividad, "
+	    		+ "	pa.\"userReg\" 		AS userReg, "
+	    		+ "	p.\"nro_doc\" 		AS nroDoc "
+	    		+ "FROM "
+	    		+ "	\"personal_actividad\" pa "
+	    		+ "LEFT JOIN \"actividad\" a ON a.\"actividad_id\" = pa.\"actividad_id\"  "
+	    		+ "LEFT JOIN \"personal\" p ON p.\"personal_id\" = pa.\"personal_id\"  "
+	    		+ "WHERE 1=1  "
+	    		+ "	AND pa.\"fecha_inicio\" < SYSDATE "
+	    		+ "	AND pa.\"fecha_fin\" > SYSDATE "
+	    		+ " AND (:personaId IS NULL OR pa.\"personal_id\" = :personaId) "
+	    		+ "ORDER BY actividad",
+	    resultSetMapping = "PersonalActividadDtoMapping"
+	)
 public class PersonalActividad {
 
     @Id

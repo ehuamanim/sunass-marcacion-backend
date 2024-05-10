@@ -14,26 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import pe.gob.sunass.marcacion.constant.AppConstant;
 import pe.gob.sunass.marcacion.dto.MaestroRestOutDto;
 import pe.gob.sunass.marcacion.service.ActividadService;
+import pe.gob.sunass.marcacion.service.MaestroService;
 
 @RestController
 @RequestMapping("/api/maestro")
 @CrossOrigin
 public class MaestroController {
+	
 	@Autowired
-    private ActividadService actividadService;
+	private MaestroService maestroService;
 
     @GetMapping("/generico/{tipo}")
     public List<MaestroRestOutDto> findById(@PathVariable String tipo) {
-    	
-    	List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
-    	if( tipo.equals( AppConstant.MAESTRO_ACTIVIDADES ) ) {
-    		maestro = actividadService
-    				.listAll()
-    				.stream()
-    				.map( a -> new MaestroRestOutDto(a.getActividadId(), a.getDescripcion(), a.getFlag()) )
-    				.collect( Collectors.toList() );
-    	}
-    	
-        return maestro;
+        return maestroService.listAll(tipo);
     }
 }

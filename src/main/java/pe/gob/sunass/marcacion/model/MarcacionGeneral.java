@@ -97,5 +97,17 @@ public class MarcacionGeneral {
 
     @Column(name = "OBSERVACION", length = 11)
     private String observacion;
-
+    
+    @Column(name = "ES_ASIGNADO", length = 1)
+    private Integer esAsignado;
+    
+    @Column(name = "PERSONAL_ACTIVIDAD_ID")
+    private Long personalActividadId;
+    
+    @Column(name = "ORDEN_VISUAL")
+    private Integer ordenVisual;
+    
+    @Column(name = "FLAG")
+    private String flag;
+    
 }

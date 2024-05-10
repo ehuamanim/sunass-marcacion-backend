@@ -35,7 +35,7 @@ public class PersonalFacade {
         }
         Integer rows = marcacionGeneralRepository.rowsPerDay( personal.getPersonalId() );
         if( rows == 0 ){
-            crearMarcacionGeneral( personal, props.getMensajeLogin() );
+            crearMarcacionGeneral( personal, props.getMensajeLogin(), AppConstant.ORDEN_VISUAL_INICIO_SESION );
         }
         crearMarcacionLog(personal, props.getMensajeLogin());
     }
@@ -51,11 +51,11 @@ public class PersonalFacade {
         if( personal == null ){
             return;
         }
-        crearMarcacionGeneral( personal, props.getMensajeEndWork() );
+        crearMarcacionGeneral( personal, props.getMensajeEndWork(), AppConstant.ORDEN_VISUAL_FINALIZAR_DIA );
         crearMarcacionLog(personal, props.getMensajeEndWork());
     }
 
-    private void crearMarcacionGeneral( PersonalDto personal, String message ){
+    private void crearMarcacionGeneral( PersonalDto personal, String message, Integer ordenVisual ){
         marcacionGenerada = new MarcacionGeneral();
         marcacionGenerada.setDescripcion( message );
         marcacionGenerada.setObservacion( message );
@@ -67,6 +67,8 @@ public class PersonalFacade {
         marcacionGenerada.setPersCodigo( personal.getPersonalId() );
         marcacionGenerada.setEstAtenId( AppConstant.EST_ATENCION_RESUELTO );
         marcacionGenerada.setFlagAtendido( AppConstant.FLAG_ATENDIDO_REALIZADO );
+        marcacionGenerada.setOrdenVisual( ordenVisual );
+        marcacionGenerada.setFlag( AppConstant.FLAG_ACTIVO );
         marcacionGeneralRepository.save( marcacionGenerada );
     }
 
