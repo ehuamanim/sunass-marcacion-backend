@@ -24,6 +24,8 @@ import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.facade.PersonalFacade;
 import pe.gob.sunass.marcacion.httpconnection.restin.AuthRestIn;
 import pe.gob.sunass.marcacion.model.MarcacionGeneral;
+import pe.gob.sunass.marcacion.model.Personal;
+import pe.gob.sunass.marcacion.security.service.AuthenticationService;
 import pe.gob.sunass.marcacion.service.MarcacionGeneralService;
 import pe.gob.sunass.marcacion.service.PersonalService;
 
@@ -44,8 +46,15 @@ public class MarcacionGeneralController {
     @Autowired
     private PersonalFacade personalFacade;
 
+    @Autowired
+	private AuthenticationService authenticationService;
+
     @PostMapping
     public ResponseEntity<MarcacionGeneral> createMarcacion(@RequestBody MarcacionGeneral marcacionGeneral) {
+        
+        Personal p = authenticationService.getPersonal();
+        marcacionGeneral.setPersCodigo( p.getPersonalId() );
+        marcacionGeneral.setPersUsuario( p.getUsername() );
         marcacionGeneral.setFechaReg(new Date());
         marcacionGeneral.setFechaLog(new Date());
         marcacionGeneral.setFlagAtendido( AppConstant.FLAG_SIN_INICIAR );
@@ -83,18 +92,20 @@ public class MarcacionGeneralController {
         return ResponseEntity.ok(savedMarcacionGeneral);
     }
 
-    @PostMapping("/endactivity")
-    public MarcacionGeneral login(@RequestBody AuthRestIn auth) {
-        PersonalDto personal = personalService.findAllByNroDoc( auth.getUsuario() );
+    @GetMapping("/endactivity")
+    public MarcacionGeneral login() {
+        Personal p = authenticationService.getPersonal();
+        PersonalDto personal = personalService.findAllByNroDoc( p.getNroDoc() );
         personalFacade.endActivity(personal);
         return personalFacade.getMarcacionGenerada();
     }
 
-    @GetMapping("per/{personaId}")
-    public ResponseEntity<List<MarcacionGeneral>> listByPers(@PathVariable String personaId) {
-        
-    	// Obteniendo las marcaciones
-    	List<MarcacionGeneral> marcaciones = marcacionGeneralService.findAllByPersCodigo(personaId);
+    @GetMapping("per")
+    public ResponseEntity<List<MarcacionGeneral>> listByPers() {
+                
+        // Obteniendo las marcaciones
+        Personal personal = authenticationService.getPersonal();
+    	List<MarcacionGeneral> marcaciones = marcacionGeneralService.findAllByPersCodigo(personal.getPersonalId());
     	marcaciones.sort(Comparator
                 .comparingInt(MarcacionGeneral::getOrdenVisual)
                 .thenComparing(MarcacionGeneralComparator.nullsLastComparator(Comparator.naturalOrder(), MarcacionGeneral::getFechaIni))

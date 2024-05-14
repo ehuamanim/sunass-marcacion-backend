@@ -33,43 +33,86 @@ import jakarta.persistence.*;
             @ColumnResult(name = "tipoPersona"),
             @ColumnResult(name = "unidadOrganizativa"),
             @ColumnResult(name = "institucionSede"),
-            @ColumnResult(name = "direccionSede")
+            @ColumnResult(name = "direccionSede"),
+            @ColumnResult(name = "username"),
+            @ColumnResult(name = "rol")
         }
     )
 )
-@NamedNativeQuery(
-    name = "findPersonalAllByNroDoc",
-    query = "SELECT "
-            + "     prs.\"personal_id\"             as personalId, "
-            + "     prs.\"planilla_id\"             as planillaId, "
-            + "     prs.\"nro_doc\"                 as nroDoc, "
-            + "     prs.\"trabajador\"              as trabajador, "
-            + "     prs.\"flag\"                    as flag, "
-            + "     prs.\"situacion_esp_id\"        as situacionEspId, "
-            + "     prs.\"cargo_id\"                as cargoId, "
-            + "     prs.\"tipo_persona_id\"         as tipoPersonaId, "
-            + "     prs.\"item_uo\"                 as itemUo, "
-            + "     prs.\"tipo_doc_id\"             as tipoDocId, "
-            + "     prs.\"condicion_id\"            as condicionId, "
-            + "     prs.\"fecha_ingreso\"           as fechaIngreso, "
-            + "     prs.\"fecha_cese\"              as fechaCese, "
-            + "     ptd.\"descripcion\"             as tipoDoc, "
-            + "     prc.\"descripcion\"             as cargo, "
-            + "     ptt.\"descripcion\"             as tipoPersona, "
-            + "     uor.\"descripcion\"             as unidadOrganizativa, "
-            + "     isd.\"nomsede\"                 as institucionSede, "
-            + "     isd.\"direccion\"               as direccionSede "
-            + " FROM \"personal\" prs "
-            + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
-            + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
-            + " LEFT JOIN \"personal_uo\" uor ON uor.\"item_uo\" = prs.\"item_uo\" "
-            + " LEFT JOIN \"personal_tipodoc\" ptd ON ptd.\"tipo_doc_id\" = prs.\"tipo_doc_id\" "
-            + " LEFT JOIN \"institucion_sede\" isd ON uor.\"sede_id\" = isd.\"sede_id\" "
-            + " WHERE "
-            + " (:nroDoc IS NULL OR prs.\"nro_doc\" = :nroDoc) "
-            + " ORDER BY trabajador asc ",
-    resultSetMapping = "PersonalDtoMapping"
-)
+@NamedNativeQueries({
+    @NamedNativeQuery(
+        name = "findPersonalAllByNroDoc",
+        query = "SELECT "
+                + "     prs.\"personal_id\"             as personalId, "
+                + "     prs.\"planilla_id\"             as planillaId, "
+                + "     prs.\"nro_doc\"                 as nroDoc, "
+                + "     prs.\"trabajador\"              as trabajador, "
+                + "     prs.\"flag\"                    as flag, "
+                + "     prs.\"situacion_esp_id\"        as situacionEspId, "
+                + "     prs.\"cargo_id\"                as cargoId, "
+                + "     prs.\"tipo_persona_id\"         as tipoPersonaId, "
+                + "     prs.\"item_uo\"                 as itemUo, "
+                + "     prs.\"tipo_doc_id\"             as tipoDocId, "
+                + "     prs.\"condicion_id\"            as condicionId, "
+                + "     prs.\"fecha_ingreso\"           as fechaIngreso, "
+                + "     prs.\"fecha_cese\"              as fechaCese, "
+                + "     ptd.\"descripcion\"             as tipoDoc, "
+                + "     prc.\"descripcion\"             as cargo, "
+                + "     ptt.\"descripcion\"             as tipoPersona, "
+                + "     uor.\"descripcion\"             as unidadOrganizativa, "
+                + "     isd.\"nomsede\"                 as institucionSede, "
+                + "     isd.\"direccion\"               as direccionSede, "
+                + "     prs.USERNAME                    as username, "
+                + "     prs.ROL                         as rol "
+                + " FROM \"personal\" prs "
+                + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
+                + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
+                + " LEFT JOIN \"personal_uo\" uor ON uor.\"item_uo\" = prs.\"item_uo\" "
+                + " LEFT JOIN \"personal_tipodoc\" ptd ON ptd.\"tipo_doc_id\" = prs.\"tipo_doc_id\" "
+                + " LEFT JOIN \"institucion_sede\" isd ON uor.\"sede_id\" = isd.\"sede_id\" "
+                + " WHERE "
+                + " (:nroDoc IS NULL OR prs.\"nro_doc\" = :nroDoc) "
+                + " ORDER BY trabajador asc ",
+        resultSetMapping = "PersonalDtoMapping"
+    ),
+    @NamedNativeQuery(
+        name = "findPersonalAll",
+        query = "SELECT "
+                + "     prs.\"personal_id\"             as personalId, "
+                + "     prs.\"planilla_id\"             as planillaId, "
+                + "     prs.\"nro_doc\"                 as nroDoc, "
+                + "     prs.\"trabajador\"              as trabajador, "
+                + "     prs.\"flag\"                    as flag, "
+                + "     prs.\"situacion_esp_id\"        as situacionEspId, "
+                + "     prs.\"cargo_id\"                as cargoId, "
+                + "     prs.\"tipo_persona_id\"         as tipoPersonaId, "
+                + "     prs.\"item_uo\"                 as itemUo, "
+                + "     prs.\"tipo_doc_id\"             as tipoDocId, "
+                + "     prs.\"condicion_id\"            as condicionId, "
+                + "     prs.\"fecha_ingreso\"           as fechaIngreso, "
+                + "     prs.\"fecha_cese\"              as fechaCese, "
+                + "     ptd.\"descripcion\"             as tipoDoc, "
+                + "     prc.\"descripcion\"             as cargo, "
+                + "     ptt.\"descripcion\"             as tipoPersona, "
+                + "     uor.\"descripcion\"             as unidadOrganizativa, "
+                + "     isd.\"nomsede\"                 as institucionSede, "
+                + "     isd.\"direccion\"               as direccionSede, "
+                + "     prs.USERNAME                    as username, "
+                + "     prs.ROL                         as rol "
+                + " FROM \"personal\" prs "
+                + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
+                + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
+                + " LEFT JOIN \"personal_uo\" uor ON uor.\"item_uo\" = prs.\"item_uo\" "
+                + " LEFT JOIN \"personal_tipodoc\" ptd ON ptd.\"tipo_doc_id\" = prs.\"tipo_doc_id\" "
+                + " LEFT JOIN \"institucion_sede\" isd ON uor.\"sede_id\" = isd.\"sede_id\" "
+                + " WHERE "
+                + " (:filter IS NULL OR prs.\"nro_doc\" like :filter) OR "
+                + " (:filter IS NULL OR LOWER( prs.\"trabajador\" ) like :filter) "
+                + " ORDER BY trabajador asc ",
+        resultSetMapping = "PersonalDtoMapping"
+    )
+})
+
 public class Personal {
 
     @Id
@@ -126,5 +169,11 @@ public class Personal {
 
     @Column(name = "\"fecha_cese\"")
     private Date fechaCese;
+
+    @Column(name = "USERNAME")
+    private String username;
+
+    @Column(name = "ROL")
+    private String rol;
 
 }

@@ -18,8 +18,24 @@ public class AppConstant {
     public static final Integer ORDEN_VISUAL_FINALIZAR_DIA = 15;
     
     public static final String MAESTRO_ACTIVIDADES = "0001";
-    public static final String MAESTRO_MOTIVO_NO_C= "0002";
+    public static final String MAESTRO_MOTIVO_NO_C = "0002";
+    public static final String MAESTRO_EJERCICIO = "0003";
+    public static final String MAESTRO_PLANILLA = "0004";
+    public static final String MAESTRO_INSTITUCION = "0005";
+    public static final String MAESTRO_SEDE = "0006";
+    public static final String MAESTRO_CARGO = "0008";
+    public static final String MAESTRO_CONDICION = "0009";
+    public static final String MAESTRO_SITUACION = "0010";
+    public static final String MAESTRO_TIPO_TRABAJADOR = "0011";
+    public static final String MAESTRO_TIPO_DOCUMENTO = "0012";
+    public static final String MAESTRO_UNIDAD_ORGANIZ = "0013";
+    public static final String MAESTRO_TIPO_DIA = "0014";
+    public static final String MAESTRO_TIPO_SUSPENSION = "0015";
+    public static final String MAESTRO_HORARIOS = "0017";
 
-    public static final String FLAG_ELIMINADO = "N";
-    public static final String FLAG_ACTIVO = "A";
+    public static final String FLAG_ELIMINADO = "0";
+    public static final String FLAG_ACTIVO = "1";
+
+    public static final String ROL_ADMIN = "ADMIN";
+    public static final String ROL_USER = "USER";
 }

@@ -37,4 +37,7 @@ public class PersonalDto {
     // Institucion Sede
     private String institucionSede;
     private String direccionSede;
+
+    private String username;
+    private String rol;
 }

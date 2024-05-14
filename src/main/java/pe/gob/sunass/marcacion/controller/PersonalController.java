@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pe.gob.sunass.marcacion.dto.AsignacionPersonalRestIn;
 import pe.gob.sunass.marcacion.dto.BaseResponseDto;
+import pe.gob.sunass.marcacion.dto.FilterRestInRO;
 import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.facade.PersonalFacade;
 import pe.gob.sunass.marcacion.httpconnection.restin.AuthRestIn;
@@ -28,18 +29,21 @@ import pe.gob.sunass.marcacion.service.PersonalService;
 @RequestMapping("/api/personal")
 @CrossOrigin
 public class PersonalController {
+    
     @Autowired
     private PersonalService personalService;
 
     @Autowired
     private PersonalFacade personalFacade;
 
-    @GetMapping
-    public ResponseEntity<List<PersonalDto>> listAll(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                   @RequestParam(value = "size", defaultValue = "10") int size,
-                                                   @RequestParam(value = "sort", defaultValue = "trabajador") String sort) {
+    @PostMapping
+    public ResponseEntity<List<PersonalDto>> listAll(
+                        @RequestBody FilterRestInRO filter,
+                        @RequestParam(value = "page", defaultValue = "0") int page,
+                        @RequestParam(value = "size", defaultValue = "10") int size,
+                        @RequestParam(value = "sort", defaultValue = "trabajador") String sort) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
-        List<PersonalDto> personalList = personalService.listAll(pageable);
+        List<PersonalDto> personalList = personalService.listAllFilter(filter.getFilter(), pageable);
         return ResponseEntity.ok(personalList);
     }
 
@@ -57,13 +61,6 @@ public class PersonalController {
     public PersonalDto login(@RequestBody AuthRestIn auth) {
         PersonalDto personal = personalService.findAllByNroDoc( auth.getUsuario() );
         personalFacade.startSesion(personal);
-        return personal;
-    }
-
-    @PostMapping("/logout")
-    public PersonalDto logout(@RequestBody AuthRestIn auth) {
-        PersonalDto personal = personalService.findAllByNroDoc( auth.getUsuario() );
-        personalFacade.endSesion(personal);
         return personal;
     }
 

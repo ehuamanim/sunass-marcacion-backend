@@ -18,7 +18,12 @@ public interface PersonalRepository extends JpaRepository<Personal, String> {
 
     public Personal findByNroDoc(String nroDoc);
 
+    public Personal findByUsername(String username);
+
     @Query(name = "findPersonalAllByNroDoc", nativeQuery = true)
     List<PersonalDto> findPersonalAllByNroDoc(@Param("nroDoc") String nroDoc, Pageable pageable);
+
+    @Query(name = "findPersonalAll", nativeQuery = true)
+    List<PersonalDto> findPersonalAllFilter(@Param("filter") String filter, Pageable pageable);
 
 }

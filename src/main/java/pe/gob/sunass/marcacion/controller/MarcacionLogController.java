@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import pe.gob.sunass.marcacion.model.MarcacionLog;
+import pe.gob.sunass.marcacion.model.Personal;
+import pe.gob.sunass.marcacion.security.service.AuthenticationService;
 import pe.gob.sunass.marcacion.service.MarcacionLogService;
 
 @RestController
@@ -27,19 +30,26 @@ public class MarcacionLogController {
     @Autowired
     private MarcacionLogService marcacionLogService;
 
-    @GetMapping("/{personalId}")
+    @Autowired
+	private AuthenticationService authenticationService;
+
+    @GetMapping
     public ResponseEntity<List<MarcacionLog>> listAll(
-                @PathVariable String personalId,
+                HttpServletRequest request,
                 @RequestParam(value = "page", defaultValue = "0") int page,
                 @RequestParam(value = "size", defaultValue = "10") int size,
                 @RequestParam(value = "sort", defaultValue = "fechaLog") String sort) {
+        
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
-        List<MarcacionLog> marcacionLogList = marcacionLogService.listByPersonalId( personalId, pageable );
+        Personal personal = authenticationService.getPersonal();
+        List<MarcacionLog> marcacionLogList = marcacionLogService.listByPersonalId( personal.getPersonalId(), pageable );
         return ResponseEntity.ok(marcacionLogList);
     }
 
     @PostMapping
     public ResponseEntity<MarcacionLog> createMarcacionLog(@RequestBody MarcacionLog marcacionLog) {
+        Personal personal = authenticationService.getPersonal();
+        marcacionLog.setPersonalId(personal.getPersonalId());
         MarcacionLog savedMarcacionLog = marcacionLogService.save(marcacionLog);
         return ResponseEntity.ok(savedMarcacionLog);
     }
