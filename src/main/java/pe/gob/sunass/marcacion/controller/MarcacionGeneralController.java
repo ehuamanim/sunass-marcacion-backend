@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,16 +17,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import pe.gob.sunass.marcacion.comparator.MarcacionGeneralComparator;
 import pe.gob.sunass.marcacion.constant.AppConstant;
 import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.facade.PersonalFacade;
-import pe.gob.sunass.marcacion.httpconnection.restin.AuthRestIn;
 import pe.gob.sunass.marcacion.model.MarcacionGeneral;
 import pe.gob.sunass.marcacion.model.Personal;
 import pe.gob.sunass.marcacion.security.service.AuthenticationService;
+import pe.gob.sunass.marcacion.service.AlfrescoService;
 import pe.gob.sunass.marcacion.service.MarcacionGeneralService;
 import pe.gob.sunass.marcacion.service.PersonalService;
 
@@ -48,6 +51,9 @@ public class MarcacionGeneralController {
 
     @Autowired
 	private AuthenticationService authenticationService;
+
+    @Autowired
+	private AlfrescoService alfrescoService;
 
     @PostMapping
     public ResponseEntity<MarcacionGeneral> createMarcacion(@RequestBody MarcacionGeneral marcacionGeneral) {
@@ -128,5 +134,20 @@ public class MarcacionGeneralController {
         return ResponseEntity.ok( marcacion );
     }
     
-    
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("folderPath") String folderPath) {
+        if (file.isEmpty()) {
+            return new ResponseEntity<>("File is empty", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            byte[] fileContent = file.getBytes();
+            String filename = file.getOriginalFilename();
+            alfrescoService.uploadFile(fileContent, filename, folderPath);
+            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to upload file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

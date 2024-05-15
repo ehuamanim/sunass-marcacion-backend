@@ -103,6 +103,7 @@ public class MarcacionGeneralService {
 	    		m.setEsAsignado( AppConstant.EST_ASIGNADO );
 	    		m.setPersonalActividadId( pl.getItem() );
 	    		m.setOrdenVisual( AppConstant.ORDEN_VISUAL_ACTIVIDAD_ASIGNADAS );
+				m.setFlag( AppConstant.FLAG_ACTIVO );
 	    		return m;
 	    	})
 	    	.collect( Collectors.toList() );

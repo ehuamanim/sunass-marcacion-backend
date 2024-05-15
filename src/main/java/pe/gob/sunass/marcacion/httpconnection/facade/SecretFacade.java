@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import pe.gob.sunass.marcacion.constant.DataBase;
+import pe.gob.sunass.marcacion.constant.SecretsEnum;
 import pe.gob.sunass.marcacion.httpconnection.Secret;
 import pe.gob.sunass.marcacion.httpconnection.SecretList;
 
@@ -29,7 +29,7 @@ public class SecretFacade {
             .orElseThrow(() -> new NoSuchElementException("No se encuentra el secretName: " + secretName));
     }
 
-    public static String getValueFromName( SecretList list, DataBase secretName ){
+    public static String getValueFromName( SecretList list, SecretsEnum secretName ){
         return getSecretFromName(list, secretName.value())
             .getSecretValue();
     }

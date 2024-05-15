@@ -1,12 +1,9 @@
 package pe.gob.sunass.marcacion.config;
 
-import java.util.Properties;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +15,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManagerFactory;
-import pe.gob.sunass.marcacion.constant.DataBase;
 import pe.gob.sunass.marcacion.constant.PropertiesConstant;
+import pe.gob.sunass.marcacion.constant.SecretsEnum;
 import pe.gob.sunass.marcacion.httpconnection.RequestConnection;
 import pe.gob.sunass.marcacion.httpconnection.SecretList;
 import pe.gob.sunass.marcacion.httpconnection.SunassRequest;
@@ -45,8 +42,8 @@ public class DbMarcacion {
         SecretList secretList = SecretFacade.parseToList(response);
         // String jdbcUrl  = SecretFacade.getValueFromName(secretList, DataBase.CNX_STRING);
         String jdbcUrl  = "jdbc:oracle:thin:@10.10.3.73:1521:trass";
-        String username = SecretFacade.getValueFromName(secretList, DataBase.USERNAME);
-        String password = SecretFacade.getValueFromName(secretList, DataBase.PASSWORD);
+        String username = SecretFacade.getValueFromName(secretList, SecretsEnum.DB_USERNAME);
+        String password = SecretFacade.getValueFromName(secretList, SecretsEnum.DB_PASSWORD);
 
         return DataSourceBuilder.create()
                   .url( jdbcUrl )

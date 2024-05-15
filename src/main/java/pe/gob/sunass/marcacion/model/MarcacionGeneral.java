@@ -109,5 +109,11 @@ public class MarcacionGeneral {
     
     @Column(name = "FLAG")
     private String flag;
+
+    @Column(name = "NOMBRE_ARCHIVO")
+    private String nombreArchivo;
+
+    @Column(name = "ALFRESCO_ID")
+    private String alfrescoId;
     
 }

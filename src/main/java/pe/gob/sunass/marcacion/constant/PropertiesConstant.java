@@ -69,4 +69,10 @@ public class PropertiesConstant {
     @Value("${dbTempus.jpa.package-to-scan}")
     private String dbTempusPackageToScan;
 
+    @Value("${alfresco.folder.id}")
+    private String alfrescoParentId;
+
+    @Value("${alfresco.folder.root}")
+    private String alfrescoFolderRoot;
+
 }
