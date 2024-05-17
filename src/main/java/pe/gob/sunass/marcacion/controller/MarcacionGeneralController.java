@@ -21,14 +21,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import pe.gob.sunass.marcacion.apirest.alfresco.AlfrescoConnector;
+import pe.gob.sunass.marcacion.apirest.body.response.NodeResponse;
 import pe.gob.sunass.marcacion.comparator.MarcacionGeneralComparator;
 import pe.gob.sunass.marcacion.constant.AppConstant;
+import pe.gob.sunass.marcacion.constant.PropertiesConstant;
 import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.facade.PersonalFacade;
 import pe.gob.sunass.marcacion.model.MarcacionGeneral;
 import pe.gob.sunass.marcacion.model.Personal;
 import pe.gob.sunass.marcacion.security.service.AuthenticationService;
-import pe.gob.sunass.marcacion.service.AlfrescoService;
 import pe.gob.sunass.marcacion.service.MarcacionGeneralService;
 import pe.gob.sunass.marcacion.service.PersonalService;
 
@@ -51,9 +53,9 @@ public class MarcacionGeneralController {
 
     @Autowired
 	private AuthenticationService authenticationService;
-
+    
     @Autowired
-	private AlfrescoService alfrescoService;
+    private PropertiesConstant prop;
 
     @PostMapping
     public ResponseEntity<MarcacionGeneral> createMarcacion(@RequestBody MarcacionGeneral marcacionGeneral) {
@@ -144,8 +146,11 @@ public class MarcacionGeneralController {
         try {
             byte[] fileContent = file.getBytes();
             String filename = file.getOriginalFilename();
-            alfrescoService.uploadFile(fileContent, filename, folderPath);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+
+            AlfrescoConnector alf = new AlfrescoConnector( prop.getAlfrescoUrl() );
+            NodeResponse nr = alf.createDirectory("umarcacionv", "W>97_X;t8FeI", "MARCACION_VIRTUAL", folderPath);
+            
+            return new ResponseEntity<>( nr.toJsonString() , HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to upload file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

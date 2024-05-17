@@ -74,5 +74,8 @@ public class PropertiesConstant {
 
     @Value("${alfresco.folder.root}")
     private String alfrescoFolderRoot;
+    
+    @Value("${alfresco.url}")
+    private String alfrescoUrl;
 
 }
