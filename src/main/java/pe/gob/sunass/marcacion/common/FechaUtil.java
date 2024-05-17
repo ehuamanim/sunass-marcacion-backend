@@ -1,5 +1,7 @@
 package pe.gob.sunass.marcacion.common;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -7,6 +9,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class FechaUtil {
+
+    public static final String PATTERN_YYYY_MM_DD = "yyyy-MM-dd";
 
     public static Date getDateWithoutHours( Date date ){
         Calendar calendar = Calendar.getInstance();
@@ -38,6 +42,11 @@ public class FechaUtil {
         Date dateHours = addHours(date, hoursToAdd);
         Date dateFinal = addMinutes(dateHours, minutesToAdd);
         return dateFinal;
+    }
+
+    public static String toStr(Date fecha, String pattern){
+        DateFormat df = new SimpleDateFormat( pattern );
+        return df.format(fecha);
     }
 
 }

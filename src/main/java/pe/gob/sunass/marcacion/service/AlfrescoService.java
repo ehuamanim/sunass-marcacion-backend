@@ -1,104 +1,90 @@
 package pe.gob.sunass.marcacion.service;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
+import pe.gob.sunass.marcacion.apirest.alfresco.AlfrescoConnector;
+import pe.gob.sunass.marcacion.apirest.body.response.NodeResponse;
+import pe.gob.sunass.marcacion.apirest.dto.AlfrescoFileRestOutRO;
+import pe.gob.sunass.marcacion.common.FechaUtil;
+import pe.gob.sunass.marcacion.common.StringUtil;
 import pe.gob.sunass.marcacion.constant.PropertiesConstant;
 
 @Service
 public class AlfrescoService {
 
     @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private String alfrescoApiUrl;
-
-    @Autowired
     private PropertiesConstant props;
 
-    public byte[] downloadFile(String fileId) {
-        String downloadUrl = alfrescoApiUrl + "/nodes/" + fileId + "/content";
-        return restTemplate.getForObject(downloadUrl, byte[].class);
+    private AlfrescoConnector alfrescoConnector;
+
+    /**
+     * Suber archivo
+     * @param username
+     * @param filename
+     * @param foldername
+     * @param file
+     * @return
+     * @throws IOException 
+     */
+    public AlfrescoFileRestOutRO uploadFile( String username, String filename, String foldername, MultipartFile mfile ) throws IOException{
+
+        alfrescoConnector = new AlfrescoConnector( props.getAlfrescoUrl() );
+
+        // 0. Convirtinendo a file
+        File file = convertMultipartFileToFile(mfile);
+
+        // 1. Obteniendo la fecha de la carpeta
+        String folderDateName = FechaUtil.toStr(new Date(), FechaUtil.PATTERN_YYYY_MM_DD);
+
+        // 2. Generando el path de la carpeta con el usuario
+        String folderPath = StringUtil.concat(props.getAlfrescoFolderRoot(), "/", username, "/", folderDateName, "/", foldername );
+
+        // 3. Creando las carpetas
+        createFolderIfNotExist( folderPath );
+
+        // 4. Creando el archivo
+        alfrescoConnector.createFile(props.getAlfrescoUser(), props.getAlfrescoPassword(), folderPath, file.getName());
+        
+        // 5. Subiendo el archivo
+        NodeResponse nr = alfrescoConnector.modifyBinaryContent(props.getAlfrescoUser(), props.getAlfrescoPassword(), folderPath + "/" + file.getName(), file.getName(), file);
+
+        AlfrescoFileRestOutRO alfrescoFileRestOutRO = new AlfrescoFileRestOutRO();
+        alfrescoFileRestOutRO.setNodeId(nr.getEntry().getId());
+        alfrescoFileRestOutRO.setFilename(file.getName());
+
+        return alfrescoFileRestOutRO;
     }
 
-    public void uploadFile(byte[] fileContent, String filename, String folderPath) {
-        String folderId = getOrCreateFolder(folderPath);
-        String uploadUrl = alfrescoApiUrl + "/nodes/" + folderId + "/children";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    private NodeResponse createFolderIfNotExist( String path ){
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        ByteArrayResource fileResource = new ByteArrayResource(fileContent) {
-            @Override
-            public String getFilename() {
-                return filename;
+        String[] foldersname = path.split("/");
+        String relativePath = "";
+        String relativePreview = "";
+
+        for ( String fname : foldersname ) {
+            relativePath += StringUtil.concat("/", fname);
+            boolean isExist = alfrescoConnector.isNodeExists(props.getAlfrescoUser(), props.getAlfrescoPassword(), relativePath);
+            if( !isExist ){
+                alfrescoConnector.createDirectory(props.getAlfrescoUser(), props.getAlfrescoPassword(), relativePreview, fname);
             }
-        };
-        body.add("filedata", fileResource);
-
-        JsonObject json = new JsonObject();
-        json.addProperty("name", filename);
-        json.addProperty("nodeType", "cm:content");
-        body.add("name", json.toString());
-
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        restTemplate.postForObject(uploadUrl, requestEntity, String.class);
-    }
-
-    private String getOrCreateFolder(String folderPath) {
-        String[] folders = folderPath.split("/");
-        String currentParentId = props.getAlfrescoParentId();
-
-        for (String folder : folders) {
-            String folderId = getFolderId(currentParentId, folder);
-            if (folderId == null) {
-                folderId = createFolder(currentParentId, folder);
-            }
-            currentParentId = folderId;
+            relativePreview += StringUtil.concat("/", fname);
         }
 
-        return currentParentId;
+        return alfrescoConnector.getNode(props.getAlfrescoUser(), props.getAlfrescoPassword(), path);
     }
 
-    private String getFolderId(String parentId, String folderName) {
-        String folderUrl = alfrescoApiUrl + "/nodes/" + parentId + "/children?relativePath=" + folderName;
-        ResponseEntity<String> response = restTemplate.getForEntity(folderUrl, String.class);
-        JsonObject responseObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
-        JsonArray entries = responseObject.getAsJsonArray("entries");
-
-        try{
-            if (entries != null && entries.size() > 0) {
-                JsonObject firstEntry = entries.get(0).getAsJsonObject();
-                return firstEntry.get("id").getAsString();
-            } 
-        }catch(Exception e){}
-
-        return null;
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        File file = new File(multipartFile.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(multipartFile.getBytes());
+        }
+        return file;
     }
 
-    private String createFolder(String parentId, String folderName) {
-        String createFolderUrl = alfrescoApiUrl + "/nodes/" + parentId + "/children";
-        JsonObject folderJson = new JsonObject();
-        folderJson.addProperty("name", folderName);
-        folderJson.addProperty("nodeType", "cm:folder");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> requestEntity = new HttpEntity<>(folderJson.toString(), headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(createFolderUrl, requestEntity, String.class);
-        JsonObject responseObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
-        return responseObject.get("entry").getAsJsonObject().get("id").getAsString();
-    }
 }

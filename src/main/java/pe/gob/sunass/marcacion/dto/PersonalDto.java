@@ -40,4 +40,5 @@ public class PersonalDto {
 
     private String username;
     private String rol;
+    private String macAddress;
 }
