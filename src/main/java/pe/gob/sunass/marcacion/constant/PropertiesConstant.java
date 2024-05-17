@@ -78,4 +78,13 @@ public class PropertiesConstant {
     @Value("${alfresco.url}")
     private String alfrescoUrl;
 
+    @Value("${alfresco.url}")
+    private String alfrescoUrl;
+
+    @Value("${alfresco.user}")
+    private String alfrescoUser;
+
+    @Value("${alfresco.password}")
+    private String alfrescoPassword;
+
 }

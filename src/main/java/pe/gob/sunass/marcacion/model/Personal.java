@@ -35,7 +35,8 @@ import jakarta.persistence.*;
             @ColumnResult(name = "institucionSede"),
             @ColumnResult(name = "direccionSede"),
             @ColumnResult(name = "username"),
-            @ColumnResult(name = "rol")
+            @ColumnResult(name = "rol"),
+            @ColumnResult(name = "macAddress", type = String.class)
         }
     )
 )
@@ -63,7 +64,8 @@ import jakarta.persistence.*;
                 + "     isd.\"nomsede\"                 as institucionSede, "
                 + "     isd.\"direccion\"               as direccionSede, "
                 + "     prs.USERNAME                    as username, "
-                + "     prs.ROL                         as rol "
+                + "     prs.ROL                         as rol, "
+                + "     prs.MAC_ADDR                    as macAddress "
                 + " FROM \"personal\" prs "
                 + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
                 + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
@@ -98,7 +100,8 @@ import jakarta.persistence.*;
                 + "     isd.\"nomsede\"                 as institucionSede, "
                 + "     isd.\"direccion\"               as direccionSede, "
                 + "     prs.USERNAME                    as username, "
-                + "     prs.ROL                         as rol "
+                + "     prs.ROL                         as rol, "
+                + "     prs.MAC_ADDR                    as macAddress "
                 + " FROM \"personal\" prs "
                 + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
                 + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
@@ -175,5 +178,8 @@ public class Personal {
 
     @Column(name = "ROL")
     private String rol;
+
+    @Column(name = "MAC_ADDR")
+    private String macAddress;
 
 }
