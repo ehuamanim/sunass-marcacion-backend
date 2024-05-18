@@ -40,8 +40,7 @@ public class DbMarcacion {
         String response = sunreq.postConnection(requestBody, String.class);
         
         SecretList secretList = SecretFacade.parseToList(response);
-        // String jdbcUrl  = SecretFacade.getValueFromName(secretList, DataBase.CNX_STRING);
-        String jdbcUrl  = "jdbc:oracle:thin:@10.10.3.73:1521:trass";
+        String jdbcUrl  = SecretFacade.getValueFromName(secretList, SecretsEnum.DB_CNX_STRING);
         String username = SecretFacade.getValueFromName(secretList, SecretsEnum.DB_USERNAME);
         String password = SecretFacade.getValueFromName(secretList, SecretsEnum.DB_PASSWORD);
 

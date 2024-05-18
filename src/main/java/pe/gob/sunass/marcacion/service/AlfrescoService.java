@@ -13,13 +13,14 @@ import pe.gob.sunass.marcacion.apirest.body.response.NodeResponse;
 import pe.gob.sunass.marcacion.apirest.dto.AlfrescoFileRestOutRO;
 import pe.gob.sunass.marcacion.common.FechaUtil;
 import pe.gob.sunass.marcacion.common.StringUtil;
+import pe.gob.sunass.marcacion.config.AlfrescoConfig;
 import pe.gob.sunass.marcacion.constant.PropertiesConstant;
 
 @Service
 public class AlfrescoService {
 
     @Autowired
-    private PropertiesConstant props;
+    private AlfrescoConfig alfConfig;
 
     private AlfrescoConnector alfrescoConnector;
 
@@ -34,7 +35,7 @@ public class AlfrescoService {
      */
     public AlfrescoFileRestOutRO uploadFile( String username, String filename, String foldername, MultipartFile mfile ) throws IOException{
 
-        alfrescoConnector = new AlfrescoConnector( props.getAlfrescoUrl() );
+        alfrescoConnector = new AlfrescoConnector( alfConfig.getUrl() );
 
         // 0. Convirtinendo a file
         File file = convertMultipartFileToFile(mfile);
@@ -43,16 +44,16 @@ public class AlfrescoService {
         String folderDateName = FechaUtil.toStr(new Date(), FechaUtil.PATTERN_YYYY_MM_DD);
 
         // 2. Generando el path de la carpeta con el usuario
-        String folderPath = StringUtil.concat(props.getAlfrescoFolderRoot(), "/", username, "/", folderDateName, "/", foldername );
+        String folderPath = StringUtil.concat(alfConfig.getRootFolderName(), "/", username, "/", folderDateName, "/", foldername );
 
         // 3. Creando las carpetas
         createFolderIfNotExist( folderPath );
 
         // 4. Creando el archivo
-        alfrescoConnector.createFile(props.getAlfrescoUser(), props.getAlfrescoPassword(), folderPath, file.getName());
+        alfrescoConnector.createFile(alfConfig.getUsername(), alfConfig.getPassword(), folderPath, file.getName());
         
         // 5. Subiendo el archivo
-        NodeResponse nr = alfrescoConnector.modifyBinaryContent(props.getAlfrescoUser(), props.getAlfrescoPassword(), folderPath + "/" + file.getName(), file.getName(), file);
+        NodeResponse nr = alfrescoConnector.modifyBinaryContent(alfConfig.getUsername(), alfConfig.getPassword(), folderPath + "/" + file.getName(), file.getName(), file);
 
         AlfrescoFileRestOutRO alfrescoFileRestOutRO = new AlfrescoFileRestOutRO();
         alfrescoFileRestOutRO.setNodeId(nr.getEntry().getId());
@@ -69,14 +70,14 @@ public class AlfrescoService {
 
         for ( String fname : foldersname ) {
             relativePath += StringUtil.concat("/", fname);
-            boolean isExist = alfrescoConnector.isNodeExists(props.getAlfrescoUser(), props.getAlfrescoPassword(), relativePath);
+            boolean isExist = alfrescoConnector.isNodeExists(alfConfig.getUsername(), alfConfig.getPassword(), relativePath);
             if( !isExist ){
-                alfrescoConnector.createDirectory(props.getAlfrescoUser(), props.getAlfrescoPassword(), relativePreview, fname);
+                alfrescoConnector.createDirectory(alfConfig.getUsername(), alfConfig.getPassword(), relativePreview, fname);
             }
             relativePreview += StringUtil.concat("/", fname);
         }
 
-        return alfrescoConnector.getNode(props.getAlfrescoUser(), props.getAlfrescoPassword(), path);
+        return alfrescoConnector.getNode(alfConfig.getUsername(), alfConfig.getPassword(), path);
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {

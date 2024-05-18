@@ -48,43 +48,4 @@ public class PropertiesConstant {
     @Value("${mensaje.endwork}")
     private String mensajeEndWork;
 
-    @Value("${dbTempus.jpa.database-platform}")
-    private String dbTempusJpaDBPlatform;
-
-    @Value("${dbTempus.jpa.show-sql}")
-    private String dbTempusJpaShowSql;
-
-    @Value("${dbTempus.datasource.jdbc-url}")
-    private String dbTempusJdbcUrl;
-
-    @Value("${dbTempus.datasource.username}")
-    private String dbTempusUsername;
-
-    @Value("${dbTempus.datasource.password}")
-    private String dbTempusPassword;
-
-    @Value("${dbTempus.datasource.driver-class-name}")
-    private String dbTempusDriver;
-
-    @Value("${dbTempus.jpa.package-to-scan}")
-    private String dbTempusPackageToScan;
-
-    @Value("${alfresco.folder.id}")
-    private String alfrescoParentId;
-
-    @Value("${alfresco.folder.root}")
-    private String alfrescoFolderRoot;
-    
-    @Value("${alfresco.url}")
-    private String alfrescoUrl;
-
-    @Value("${alfresco.url}")
-    private String alfrescoUrl;
-
-    @Value("${alfresco.user}")
-    private String alfrescoUser;
-
-    @Value("${alfresco.password}")
-    private String alfrescoPassword;
-
 }
