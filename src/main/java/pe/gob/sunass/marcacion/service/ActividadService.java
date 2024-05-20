@@ -17,5 +17,21 @@ public class ActividadService {
     public List<Actividad> listAll(){
     	return actividadRepository.findAll();
     }
+    
+    public Long count(){
+    	return actividadRepository.count();
+    }
+    
+    public Actividad save( Actividad act ){
+    	return actividadRepository.save(act);
+    }
+    
+    public Actividad update( Actividad act ){
+    	return actividadRepository.save(act);
+    }
+    
+    public Actividad getById( String id ){
+    	return actividadRepository.findById(id).orElse(null);
+    }
 
 }

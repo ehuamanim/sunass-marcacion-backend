@@ -36,6 +36,7 @@ public class HttpSecurityConfig {
 				auth.requestMatchers("/").permitAll();
 				auth.requestMatchers("/api/logout/**").permitAll();
 				auth.requestMatchers("/api/auth/**").permitAll();
+				auth.requestMatchers("/api/marcacion/download/**").permitAll();
 				// auth.requestMatchers("/api/maestro/**").hasAnyRole(AppConstant.ROL_ADMIN, AppConstant.ROL_USER);
 				// auth.requestMatchers("/api/log/**").hasAnyRole(AppConstant.ROL_ADMIN, AppConstant.ROL_USER);
 				// auth.requestMatchers("/api/marcacion/**").hasAnyRole(AppConstant.ROL_ADMIN, AppConstant.ROL_USER);

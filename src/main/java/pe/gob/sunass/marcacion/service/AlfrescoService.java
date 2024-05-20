@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pe.gob.sunass.marcacion.apirest.alfresco.AlfrescoConnector;
 import pe.gob.sunass.marcacion.apirest.body.response.NodeResponse;
 import pe.gob.sunass.marcacion.apirest.dto.AlfrescoFileRestOutRO;
+import pe.gob.sunass.marcacion.apirest.exception.AlfrescoConnectorException;
 import pe.gob.sunass.marcacion.common.FechaUtil;
 import pe.gob.sunass.marcacion.common.StringUtil;
 import pe.gob.sunass.marcacion.config.AlfrescoConfig;
@@ -60,6 +61,12 @@ public class AlfrescoService {
         alfrescoFileRestOutRO.setFilename(file.getName());
 
         return alfrescoFileRestOutRO;
+    }
+    
+    public byte[] getBytesNode(String nodeId) throws AlfrescoConnectorException{
+    	alfrescoConnector = new AlfrescoConnector( alfConfig.getUrl() );
+    	String ticket = alfrescoConnector.getTicket(alfConfig.getUsername(), alfConfig.getPassword());
+    	return alfrescoConnector.getBytesNode(nodeId, ticket);
     }
 
     private NodeResponse createFolderIfNotExist( String path ){

@@ -1,8 +1,10 @@
 package pe.gob.sunass.marcacion.controller;
 
+import java.awt.PageAttributes.MediaType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import pe.gob.sunass.marcacion.apirest.dto.AlfrescoFileRestOutRO;
 import pe.gob.sunass.marcacion.comparator.MarcacionGeneralComparator;
 import pe.gob.sunass.marcacion.constant.AppConstant;
 import pe.gob.sunass.marcacion.constant.PropertiesConstant;
@@ -95,6 +101,8 @@ public class MarcacionGeneralController {
     public ResponseEntity<MarcacionGeneral> finalizarMarcacion(@RequestBody MarcacionGeneral marcacionGeneral) {
         MarcacionGeneral savedMarcacionGeneral = marcacionGeneralService.findByItem(marcacionGeneral.getItem());
         savedMarcacionGeneral.setFechaFin(new Date());
+        savedMarcacionGeneral.setAlfrescoId( marcacionGeneral.getAlfrescoId() );
+        savedMarcacionGeneral.setNombreArchivo( marcacionGeneral.getNombreArchivo() );
         savedMarcacionGeneral.setObservacion(marcacionGeneral.getObservacion());
         savedMarcacionGeneral.setFlagAtendido(AppConstant.FLAG_ATENDIDO_REALIZADO);
         savedMarcacionGeneral.setEstAtenId(AppConstant.EST_ATENCION_RESUELTO);
@@ -139,19 +147,49 @@ public class MarcacionGeneralController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<AlfrescoFileRestOutRO> uploadFile(@RequestParam("file") MultipartFile file,
                                              @RequestParam("folderPath") String folderPath) {
+    	
+    	AlfrescoFileRestOutRO uploadFile = new AlfrescoFileRestOutRO();
+    	uploadFile.setStatus("ERROR");
+    	uploadFile.setMessage("No se encuentra archivo");
+    	
         if (file.isEmpty()) {
-            return new ResponseEntity<>("File is empty", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(uploadFile, HttpStatus.BAD_REQUEST);
         }
 
         try {
             Personal p = authenticationService.getPersonal();
             String filename = file.getOriginalFilename();
-            alfrescoService.uploadFile(p.getUsername(), filename, UUID.randomUUID().toString(), file);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+            AlfrescoFileRestOutRO uploadFlie =  alfrescoService.uploadFile(p.getUsername(), filename, UUID.randomUUID().toString(), file);
+            uploadFlie.setStatus("SUCCESS");
+        	uploadFlie.setMessage("");
+            return new ResponseEntity<>(uploadFlie, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to upload file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        	uploadFile.setMessage("No pudimos subir su archivo");
+            return new ResponseEntity<>(uploadFile, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping("/download/{documentId}")
+    public void downloadFile(@PathVariable("documentId") String documentId,
+                                                @RequestParam("filename") String filename,
+                                                HttpServletResponse response) {
+        AlfrescoFileRestOutRO downloadFile = new AlfrescoFileRestOutRO();
+        downloadFile.setStatus("ERROR");
+        downloadFile.setMessage("No se encuentra el archivo");
+        try {
+            byte[] data = alfrescoService.getBytesNode(documentId);
+            
+            response.setContentType("application/octet-stream");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+            
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(data);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+        	e.printStackTrace();
         }
     }
 

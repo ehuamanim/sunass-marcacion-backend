@@ -1,6 +1,7 @@
 package pe.gob.sunass.marcacion.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.gob.sunass.marcacion.constant.AppConstant;
+import pe.gob.sunass.marcacion.dto.MaestroRestInDTO;
 import pe.gob.sunass.marcacion.dto.MaestroRestOutDto;
+import pe.gob.sunass.marcacion.model.Actividad;
 import pe.gob.sunass.marcacion.repository.CargoRepository;
 import pe.gob.sunass.marcacion.repository.CondicionRepository;
 import pe.gob.sunass.marcacion.repository.EjercicioRepository;
@@ -168,5 +171,38 @@ public class MaestroService {
     	
     	return maestro;
 	}
+
 	
+	public List<MaestroRestOutDto> save( MaestroRestInDTO tipo ){
+		
+		List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
+
+		if( tipo.getTipo().equals(AppConstant.MAESTRO_ACTIVIDADES) ) {
+			
+			String id = String.format("%3c%s", '0', ( actividadService.count() + 1 ));
+			Actividad act = new Actividad();
+			act.setActividadId(id);
+			act.setDescripcion( tipo.getNombre() );
+			act.setFecReg( new Date() );
+			act.setFlag( AppConstant.FLAG_ACTIVO );
+			actividadService.save(act);
+		}
+		
+    	return maestro;
+	}
+	
+	public List<MaestroRestOutDto> update( MaestroRestInDTO tipo ){
+		
+		List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
+
+		if( tipo.getTipo().equals(AppConstant.MAESTRO_ACTIVIDADES) ) {
+			Actividad act = actividadService.getById(tipo.getId());
+			act.setDescripcion( tipo.getNombre() );
+			act.setFecMod(new Date());
+			act.setFlag( AppConstant.FLAG_ACTIVO );
+			actividadService.save(act);
+		}
+		
+    	return maestro;
+	}
 }
