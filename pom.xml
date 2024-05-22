@@ -153,13 +153,6 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<version>9.2.1.jre11</version>
 		</dependency>
-		
-		<!-- Alfresco connector -->
-		<dependency>			
-			<groupId>pe.gob.sunass</groupId>
-			<artifactId>marcacion</artifactId>
-			<version>0.0.1-3</version>
-		</dependency>
 
 
 	</dependencies>
