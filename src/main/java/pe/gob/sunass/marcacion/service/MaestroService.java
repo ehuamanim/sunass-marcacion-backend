@@ -15,6 +15,9 @@ import pe.gob.sunass.marcacion.constant.AppConstant;
 import pe.gob.sunass.marcacion.dto.MaestroRestInDTO;
 import pe.gob.sunass.marcacion.dto.MaestroRestOutDto;
 import pe.gob.sunass.marcacion.model.Actividad;
+import pe.gob.sunass.marcacion.model.Ejercicio;
+import pe.gob.sunass.marcacion.model.InstitucionSede;
+import pe.gob.sunass.marcacion.model.Planilla;
 import pe.gob.sunass.marcacion.repository.CargoRepository;
 import pe.gob.sunass.marcacion.repository.CondicionRepository;
 import pe.gob.sunass.marcacion.repository.EjercicioRepository;
@@ -34,6 +37,15 @@ public class MaestroService {
 
 	@Autowired
     private ActividadService actividadService;
+	
+	 @Autowired
+    private EjercicioService ejercicioService;
+
+    @Autowired
+    private PlanillaService planillaService;
+
+    @Autowired
+    private InstitucionService institucionService;
 	
 	@Autowired
 	private MotivoNoCumplimientoRepository motivoNoCumplimientoRepository;
@@ -80,10 +92,29 @@ public class MaestroService {
 		Map<String, Supplier<List<MaestroRestOutDto>>> maestroMap = new HashMap<>();
 
 		maestroMap.put(AppConstant.MAESTRO_ACTIVIDADES, () -> actividadService
-																.listAll()
-																.stream()
-       															.map(a -> new MaestroRestOutDto(a.getActividadId(), a.getDescripcion(), a.getFlag()))
-       															.collect(Collectors.toList()));
+			    .listAll()
+			    .stream()
+			    .map(a -> new MaestroRestOutDto(a.getActividadId(), a.getDescripcion(), a.getFlag()))
+			    .collect(Collectors.toList()));
+
+			maestroMap.put(AppConstant.MAESTRO_EJERCICIO, () -> ejercicioService
+			    .listAll()
+			    .stream()
+			    .map(e -> new MaestroRestOutDto(e.getEjercicioId(), e.getDescripcion(), e.getFlag()))
+			    .collect(Collectors.toList()));
+
+			maestroMap.put(AppConstant.MAESTRO_PLANILLA, () -> planillaService
+			    .listAll()
+			    .stream()
+			    .map(p -> new MaestroRestOutDto(p.getPlanillaId(), p.getDescripcion(), p.getFlag()))
+			    .collect(Collectors.toList()));
+
+			maestroMap.put(AppConstant.MAESTRO_INSTITUCION, () -> institucionService
+			    .listAll()
+			    .stream()
+			    .map(i -> new MaestroRestOutDto(i.getSedeId(), i.getNomsede(), i.getFlag()))
+			    .collect(Collectors.toList()));
+
 
 		maestroMap.put(AppConstant.MAESTRO_MOTIVO_NO_C, () -> motivoNoCumplimientoRepository
 																.findAll()
@@ -173,36 +204,72 @@ public class MaestroService {
 	}
 
 	
-	public List<MaestroRestOutDto> save( MaestroRestInDTO tipo ){
-		
-		List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
+	public List<MaestroRestOutDto> save(MaestroRestInDTO tipo) {
+	    List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
 
-		if( tipo.getTipo().equals(AppConstant.MAESTRO_ACTIVIDADES) ) {
-			
-			String id = String.format("%3c%s", '0', ( actividadService.count() + 1 ));
-			Actividad act = new Actividad();
-			act.setActividadId(id);
-			act.setDescripcion( tipo.getNombre() );
-			act.setFecReg( new Date() );
-			act.setFlag( AppConstant.FLAG_ACTIVO );
-			actividadService.save(act);
-		}
-		
-    	return maestro;
-	}
-	
-	public List<MaestroRestOutDto> update( MaestroRestInDTO tipo ){
-		
-		List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
+	    if (tipo.getTipo().equals(AppConstant.MAESTRO_ACTIVIDADES)) {
+	        String id = String.format("%3c%s", '0', (actividadService.count() + 1));
+	        Actividad act = new Actividad();
+	        act.setActividadId(id);
+	        act.setDescripcion(tipo.getNombre());
+	        act.setFecReg(new Date());
+	        act.setFlag(AppConstant.FLAG_ACTIVO);
+	        actividadService.save(act);
+	    } else if (tipo.getTipo().equals(AppConstant.MAESTRO_EJERCICIO)) {
+	        String id = String.format("%3c%s", '0', (ejercicioService.count() + 1));
+	        Ejercicio eje = new Ejercicio();
+	        eje.setEjercicioId(id);
+	        eje.setDescripcion(tipo.getNombre());
+	        eje.setFlag(AppConstant.FLAG_ACTIVO);
+	        ejercicioService.save(eje);
+	    } else if (tipo.getTipo().equals(AppConstant.MAESTRO_PLANILLA)) {
+	        String id = String.format("%1c%s", '0', (planillaService.count() + 1));
+	        Planilla pla = new Planilla();
+	        pla.setPlanillaId(id);
+	        pla.setDescripcion(tipo.getNombre());
+	        pla.setFlag(AppConstant.FLAG_ACTIVO);
+	        planillaService.save(pla);
+	    } else if (tipo.getTipo().equals(AppConstant.MAESTRO_INSTITUCION)) {
+	        String id = String.format("%02d", institucionService.count() + 1);
+	        InstitucionSede inst = new InstitucionSede();
+	        inst.setSedeId(id);
+	        inst.setNomsede(tipo.getNombre());
+	        inst.setFecreg(new Date());
+	        inst.setFlag(AppConstant.FLAG_ACTIVO);
+	        institucionService.save(inst);
+	    }
 
-		if( tipo.getTipo().equals(AppConstant.MAESTRO_ACTIVIDADES) ) {
-			Actividad act = actividadService.getById(tipo.getId());
-			act.setDescripcion( tipo.getNombre() );
-			act.setFecMod(new Date());
-			act.setFlag( AppConstant.FLAG_ACTIVO );
-			actividadService.save(act);
-		}
-		
-    	return maestro;
+	    return maestro;
 	}
+
+	public List<MaestroRestOutDto> update(MaestroRestInDTO tipo) {
+	    List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
+
+	    if (tipo.getTipo().equals(AppConstant.MAESTRO_ACTIVIDADES)) {
+	        Actividad act = actividadService.getById(tipo.getId());
+	        act.setDescripcion(tipo.getNombre());
+	        act.setFecMod(new Date());
+	        act.setFlag(AppConstant.FLAG_ACTIVO);
+	        actividadService.save(act);
+	    } else if (tipo.getTipo().equals(AppConstant.MAESTRO_EJERCICIO)) {
+	        Ejercicio eje = ejercicioService.getById(tipo.getId());
+	        eje.setDescripcion(tipo.getNombre());
+	        eje.setFlag(AppConstant.FLAG_ACTIVO);
+	        ejercicioService.save(eje);
+	    } else if (tipo.getTipo().equals(AppConstant.MAESTRO_PLANILLA)) {
+	        Planilla pla = planillaService.getById(tipo.getId());
+	        pla.setDescripcion(tipo.getNombre());
+	        pla.setFlag(AppConstant.FLAG_ACTIVO);
+	        planillaService.save(pla);
+	    } else if (tipo.getTipo().equals(AppConstant.MAESTRO_INSTITUCION)) {
+	    	InstitucionSede inst = institucionService.getById(tipo.getId());
+	    	inst.setNomsede(tipo.getNombre());
+	        inst.setFecmod(new Date());
+	        inst.setFlag(AppConstant.FLAG_ACTIVO);
+	        institucionService.save(inst);
+	    }
+
+	    return maestro;
+	}
+
 }
