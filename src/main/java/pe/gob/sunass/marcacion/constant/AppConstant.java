@@ -10,6 +10,9 @@ public class AppConstant {
     public static final Integer FLAG_ATENDIDO_REALIZADO = 2;
     public static final Integer FLAG_SIN_INICIAR = 3;    
     
+    public static final String  FLAG_TAREA_FINALIZADA = "F";
+    public static final String  FLAG_TAREA_NO_FINALIZADA = "C"; 
+    
     public static final Integer EST_ASIGNADO = 1;
     
     public static final Integer ORDEN_VISUAL_INICIO_SESION = 0;

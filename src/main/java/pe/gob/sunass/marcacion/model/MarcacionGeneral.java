@@ -116,4 +116,7 @@ public class MarcacionGeneral {
     @Column(name = "ALFRESCO_ID")
     private String alfrescoId;
     
+    @Column(name = "TAREA_FINALIZADA")
+    private String tareaFinalizada;
+    
 }

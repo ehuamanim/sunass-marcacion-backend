@@ -99,11 +99,15 @@ public class MarcacionGeneralController {
 
     @PutMapping("/finalizar")
     public ResponseEntity<MarcacionGeneral> finalizarMarcacion(@RequestBody MarcacionGeneral marcacionGeneral) {
+    	System.out.println("============================================");
+    	System.out.println(marcacionGeneral);
+    	System.out.println("============================================");
         MarcacionGeneral savedMarcacionGeneral = marcacionGeneralService.findByItem(marcacionGeneral.getItem());
         savedMarcacionGeneral.setFechaFin(new Date());
         savedMarcacionGeneral.setAlfrescoId( marcacionGeneral.getAlfrescoId() );
         savedMarcacionGeneral.setNombreArchivo( marcacionGeneral.getNombreArchivo() );
         savedMarcacionGeneral.setObservacion(marcacionGeneral.getObservacion());
+        savedMarcacionGeneral.setTareaFinalizada(marcacionGeneral.getTareaFinalizada());
         savedMarcacionGeneral.setFlagAtendido(AppConstant.FLAG_ATENDIDO_REALIZADO);
         savedMarcacionGeneral.setEstAtenId(AppConstant.EST_ATENCION_RESUELTO);
         marcacionGeneralService.save(savedMarcacionGeneral);
