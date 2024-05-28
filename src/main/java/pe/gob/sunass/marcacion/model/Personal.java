@@ -109,8 +109,9 @@ import jakarta.persistence.*;
                 + " LEFT JOIN \"personal_tipodoc\" ptd ON ptd.\"tipo_doc_id\" = prs.\"tipo_doc_id\" "
                 + " LEFT JOIN \"institucion_sede\" isd ON uor.\"sede_id\" = isd.\"sede_id\" "
                 + " WHERE "
-                + " (:filter IS NULL OR prs.\"nro_doc\" like :filter) OR "
-                + " (:filter IS NULL OR LOWER( prs.\"trabajador\" ) like :filter) "
+                + " (:unidadOrganizativa IS NULL OR prs.\"item_uo\" = :unidadOrganizativa) AND "
+                + " ((:filter IS NULL OR prs.\"nro_doc\" like :filter) OR "
+                + " (:filter IS NULL OR LOWER(prs.\"trabajador\") like :filter))"
                 + " ORDER BY trabajador asc ",
         resultSetMapping = "PersonalDtoMapping"
     )

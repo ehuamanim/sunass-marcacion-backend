@@ -45,4 +45,7 @@ public class Actividad {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "\"fecMod\"")
 	private Date fecMod;
+	
+	@Column(name = "\"UNIDAD_ORGANIZATIVA\"", length = 20)
+	private String unidadOrganizativa;
 }

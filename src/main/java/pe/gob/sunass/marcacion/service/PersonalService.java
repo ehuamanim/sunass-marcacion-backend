@@ -34,8 +34,8 @@ public class PersonalService {
     @Autowired
     private PersonalRemotoRepository personalRemotoRepository;
 
-    public List<PersonalDto> listAllFilter(String filter,  Pageable pageable) {
-        return personalRepository.findPersonalAllFilter("%" + filter + "%", pageable);
+    public List<PersonalDto> listAllFilter(String filter, String unidadOrganizativa,  Pageable pageable) {
+        return personalRepository.findPersonalAllFilter("%" + filter + "%", unidadOrganizativa, pageable);
     }
 
     public Personal findById(String personalId) {

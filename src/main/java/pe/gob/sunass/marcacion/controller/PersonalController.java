@@ -39,11 +39,12 @@ public class PersonalController {
     @PostMapping
     public ResponseEntity<List<PersonalDto>> listAll(
                         @RequestBody FilterRestInRO filter,
+                        @RequestParam(value = "unidadOrganizativa", required = false) String unidadOrganizativa,
                         @RequestParam(value = "page", defaultValue = "0") int page,
                         @RequestParam(value = "size", defaultValue = "10") int size,
                         @RequestParam(value = "sort", defaultValue = "trabajador") String sort) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
-        List<PersonalDto> personalList = personalService.listAllFilter(filter.getFilter(), pageable);
+        List<PersonalDto> personalList = personalService.listAllFilter(filter.getFilter(), unidadOrganizativa, pageable);
         return ResponseEntity.ok(personalList);
     }
 

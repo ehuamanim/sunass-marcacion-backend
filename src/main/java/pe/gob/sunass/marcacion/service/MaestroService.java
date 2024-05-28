@@ -211,7 +211,8 @@ public class MaestroService {
 	        String id = String.format("%3c%s", '0', (actividadService.count() + 1));
 	        Actividad act = new Actividad();
 	        act.setActividadId(id);
-	        act.setDescripcion(tipo.getNombre());
+	        act.setDescripcion(tipo.getNombre().split("\\|")[0]);
+	        act.setUnidadOrganizativa(tipo.getNombre().split("\\|")[1]);
 	        act.setFecReg(new Date());
 	        act.setFlag(AppConstant.FLAG_ACTIVO);
 	        actividadService.save(act);
