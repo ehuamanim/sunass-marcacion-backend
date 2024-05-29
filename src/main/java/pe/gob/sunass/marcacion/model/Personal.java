@@ -114,7 +114,27 @@ import jakarta.persistence.*;
                 + " (:filter IS NULL OR LOWER(prs.\"trabajador\") like :filter))"
                 + " ORDER BY trabajador asc ",
         resultSetMapping = "PersonalDtoMapping"
-    )
+    ),
+    @NamedNativeQuery(
+	    name = "updatePersonal",
+	    query = "UPDATE \"personal\" SET "
+	            + "\"planilla_id\" = :planillaId, "
+	            + "\"nro_doc\" = :nroDoc, "
+	            + "\"trabajador\" = :trabajador, "
+	            + "\"flag\" = :flag, "
+	            + "\"situacion_esp_id\" = :situacionEspId, "
+	            + "\"cargo_id\" = :cargoId, "
+	            + "\"tipo_persona_id\" = :tipoPersonaId, "
+	            + "\"item_uo\" = :itemUo, "
+	            + "\"tipo_doc_id\" = :tipoDocId, "
+	            + "\"condicion_id\" = :condicionId, "
+	            + "\"fecha_ingreso\" = :fechaIngreso, "
+	            + "\"fecha_cese\" = :fechaCese, "
+	            + "\"USERNAME\" = :username, "
+	            + "\"ROL\" = :rol, "
+	            + "\"MAC_ADDR\" = :macAddress "
+	            + "WHERE \"personal_id\" = :personalId"
+	)
 })
 
 public class Personal {

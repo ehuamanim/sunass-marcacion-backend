@@ -81,6 +81,27 @@ public class PersonalService {
 
         return response;
     }
+    
+    public void updatePersonal(PersonalDto personalDto) {
+        personalRepository.updatePersonal(
+            personalDto.getPersonalId(),
+            personalDto.getPlanillaId(),
+            personalDto.getNroDoc(),
+            personalDto.getTrabajador(),
+            personalDto.getFlag(),
+            personalDto.getSituacionEspId(),
+            personalDto.getCargoId(),
+            personalDto.getTipoPersonaId(),
+            personalDto.getItemUo(),
+            personalDto.getTipoDocId(),
+            personalDto.getCondicionId(),
+            personalDto.getFechaIngreso(),
+            personalDto.getFechaCese(),
+            personalDto.getUsername(),
+            personalDto.getRol(),
+            personalDto.getMacAddress()
+        );
+    }
 
 
     private void generarPersonalRemoto( List<PersonalRemoto> prList, List<PersonalDto> personal, List<Date> fechas){
