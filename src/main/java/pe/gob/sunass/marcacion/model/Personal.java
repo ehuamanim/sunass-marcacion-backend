@@ -65,7 +65,9 @@ import jakarta.persistence.*;
                 + "     isd.\"direccion\"               as direccionSede, "
                 + "     prs.USERNAME                    as username, "
                 + "     prs.ROL                         as rol, "
-                + "     prs.MAC_ADDR                    as macAddress "
+                + "     prs.MAC_ADDR                    as macAddress, "
+                + "     prs.MAC_ADDR_2                  as macAddress2, "
+                + "     prs.FLAG_MAC_ADDR               as flagMacAddress "
                 + " FROM \"personal\" prs "
                 + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
                 + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
@@ -101,7 +103,9 @@ import jakarta.persistence.*;
                 + "     isd.\"direccion\"               as direccionSede, "
                 + "     prs.USERNAME                    as username, "
                 + "     prs.ROL                         as rol, "
-                + "     prs.MAC_ADDR                    as macAddress "
+                + "     prs.MAC_ADDR                    as macAddress, "
+                + "     prs.MAC_ADDR_2                  as macAddress2, "
+                + "     prs.FLAG_MAC_ADDR               as flagMacAddress "
                 + " FROM \"personal\" prs "
                 + " LEFT JOIN \"personal_cargo\" prc ON prc.\"cargo_id\" = prs.\"cargo_id\" "
                 + " LEFT JOIN \"personal_tipo_trabajador\" ptt ON ptt.\"tipo_persona_id\" = prs.\"tipo_persona_id\" "
@@ -132,7 +136,9 @@ import jakarta.persistence.*;
 	            + "\"fecha_cese\" = :fechaCese, "
 	            + "\"USERNAME\" = :username, "
 	            + "\"ROL\" = :rol, "
-	            + "\"MAC_ADDR\" = :macAddress "
+	            + "\"MAC_ADDR\" = :macAddress, "
+	            + "\"MAC_ADDR_2\" = :macAddress2, "
+	            + "\"FLAG_MAC_ADDR\" = :flagMacAddress "
 	            + "WHERE \"personal_id\" = :personalId"
 	)
 })
@@ -202,5 +208,11 @@ public class Personal {
 
     @Column(name = "MAC_ADDR")
     private String macAddress;
+    
+    @Column(name = "MAC_ADDR_2")
+    private String macAddress2;
+    
+    @Column(name = "FLAG_MAC_ADDR")
+    private String flagMacAddress;
 
 }

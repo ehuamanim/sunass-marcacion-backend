@@ -41,4 +41,6 @@ public class PersonalDto {
     private String username;
     private String rol;
     private String macAddress;
+    private String macAddress2;
+    private String flagMacAddress;
 }

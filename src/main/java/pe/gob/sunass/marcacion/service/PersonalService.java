@@ -99,7 +99,9 @@ public class PersonalService {
             personalDto.getFechaCese(),
             personalDto.getUsername(),
             personalDto.getRol(),
-            personalDto.getMacAddress()
+            personalDto.getMacAddress(),
+            personalDto.getMacAddress2(),
+            personalDto.getFlagMacAddress()
         );
     }
 

@@ -45,6 +45,7 @@ public interface PersonalRepository extends JpaRepository<Personal, String> {
                         @Param("fechaCese") Date fechaCese,
                         @Param("username") String username,
                         @Param("rol") String rol,
-                        @Param("macAddress") String macAddress);
-
+                        @Param("macAddress") String macAddress,
+					    @Param("macAddress2") String macAddress2,
+					    @Param("flagMacAddress") String flagMacAddress);
 }
