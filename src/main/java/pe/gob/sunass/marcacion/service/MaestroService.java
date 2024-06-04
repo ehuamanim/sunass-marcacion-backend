@@ -90,11 +90,15 @@ public class MaestroService {
 		
 		List<MaestroRestOutDto> maestro = new ArrayList<MaestroRestOutDto>();
 		Map<String, Supplier<List<MaestroRestOutDto>>> maestroMap = new HashMap<>();
-
+		
 		maestroMap.put(AppConstant.MAESTRO_ACTIVIDADES, () -> actividadService
 			    .listAll()
 			    .stream()
-			    .map(a -> new MaestroRestOutDto(a.getActividadId(), a.getDescripcion(), a.getFlag()))
+			    .map(a -> {
+			        String unidadOrganizativa = a.getUnidadOrganizativa() != null ? a.getUnidadOrganizativa() : "";
+			        String descripcionConUnidad = a.getDescripcion() + "|" + unidadOrganizativa;
+			        return new MaestroRestOutDto(a.getActividadId(), descripcionConUnidad, a.getFlag());
+			    })
 			    .collect(Collectors.toList()));
 
 			maestroMap.put(AppConstant.MAESTRO_EJERCICIO, () -> ejercicioService
