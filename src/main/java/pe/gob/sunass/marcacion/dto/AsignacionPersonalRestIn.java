@@ -10,4 +10,6 @@ public class AsignacionPersonalRestIn {
     List<Date> dias;
     List<MaestroRestOutDto> actividades;
     List<PersonalDto> personal;
+    String modalidad;
+    String condiciones;
 }

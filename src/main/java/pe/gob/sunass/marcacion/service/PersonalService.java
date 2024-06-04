@@ -67,7 +67,7 @@ public class PersonalService {
         
         // Guardando actividades
         List<PersonalActividad> paList =  new ArrayList<>();
-        generarAsignacion(paList, asignacion.getPersonal(), asignacion.getActividades(), asignacion.getDias() );
+        generarAsignacion(paList, asignacion.getPersonal(), asignacion.getActividades(), asignacion.getDias(), asignacion.getModalidad(), asignacion.getCondiciones());
         for (PersonalActividad pa : paList) {
             personalActividadRepository.save( pa );
         }
@@ -129,19 +129,19 @@ public class PersonalService {
         }
     }
 
-    private void generarAsignacion( List<PersonalActividad> paList, List<PersonalDto> personal, List<MaestroRestOutDto> actividades, List<Date> fechas){
+    private void generarAsignacion( List<PersonalActividad> paList, List<PersonalDto> personal, List<MaestroRestOutDto> actividades, List<Date> fechas, String modalidad, String condiciones){
         for( PersonalDto p : personal ){
-            agregarAsignacion(paList, p, actividades, fechas);
+            agregarAsignacion(paList, p, actividades, fechas, modalidad, condiciones);
         }
     }
 
-    private void agregarAsignacion( List<PersonalActividad> paList, PersonalDto personal, List<MaestroRestOutDto> actividades, List<Date> fechas ){
+    private void agregarAsignacion( List<PersonalActividad> paList, PersonalDto personal, List<MaestroRestOutDto> actividades, List<Date> fechas, String modalidad, String condiciones ){
         for( MaestroRestOutDto m: actividades ){
-          agregarAsignacion(paList, personal, m, fechas);  
+          agregarAsignacion(paList, personal, m, fechas, modalidad, condiciones);  
         }
     }
 
-    private void agregarAsignacion( List<PersonalActividad> paList, PersonalDto personal, MaestroRestOutDto actividad, List<Date> fechas ){
+    private void agregarAsignacion( List<PersonalActividad> paList, PersonalDto personal, MaestroRestOutDto actividad, List<Date> fechas, String modalidad, String condiciones ){
         for( Date f: fechas ){
             Date fechaInicio = FechaUtil.getDateWithoutHours(f);
             Date fechaFin = FechaUtil.addTime(fechaInicio, 23, 59);
@@ -155,6 +155,8 @@ public class PersonalService {
             pa.setFlag( "1" );
             pa.setUserReg( "admin" );
             pa.setFecReg(new Date());
+            pa.setModalidadId(modalidad);
+            pa.setCondicionesId(condiciones); 
             paList.add(pa);
         }
     }

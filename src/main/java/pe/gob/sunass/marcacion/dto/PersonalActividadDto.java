@@ -13,4 +13,6 @@ public class PersonalActividadDto {
 	private String actividad;
 	private String userReg;
 	private String nroDoc;
+	private String modalidadId;
+	private String condicionesId;
 }
