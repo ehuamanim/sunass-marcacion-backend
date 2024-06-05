@@ -36,7 +36,9 @@ import jakarta.persistence.*;
             @ColumnResult(name = "direccionSede"),
             @ColumnResult(name = "username"),
             @ColumnResult(name = "rol"),
-            @ColumnResult(name = "macAddress", type = String.class)
+            @ColumnResult(name = "macAddress", type = String.class),
+            @ColumnResult(name = "macAddress2", type = String.class),
+            @ColumnResult(name = "flagMacAddress", type = String.class)
         }
     )
 )
