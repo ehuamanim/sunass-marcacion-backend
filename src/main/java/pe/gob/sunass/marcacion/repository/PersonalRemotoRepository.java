@@ -13,4 +13,8 @@ public interface PersonalRemotoRepository extends JpaRepository<PersonalRemoto, 
     
     @Query("SELECT pr FROM PersonalRemoto pr WHERE pr.personalId=:personalId AND pr.fechaIniRemoto=:fechaIniRemoto")
     public List<PersonalRemoto> findByPersonalAndFechaIniRemoto(String personalId, Date fechaIniRemoto);
+
+    @Query("SELECT pr FROM PersonalRemoto pr WHERE pr.personalId=:personalId AND TRUNC(pr.fechaIniRemoto) >= TRUNC(:fechaIniRemoto)")
+    public List<PersonalRemoto> findByPersonalRemotoDesdeFechaActual(String personalId, Date fechaIniRemoto);
+
 }

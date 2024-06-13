@@ -105,6 +105,14 @@ public class PersonalService {
         );
     }
 
+    public BaseResponseDto listAccesosRemotoPersonal(String personalId) {
+        BaseResponseDto response = new BaseResponseDto( "200", "Listado de personal" );
+        
+        // Guardando accesos remotos
+        personalRemotoRepository.findByPersonalAndFechaIniRemoto( personalId, new Date());
+
+        return response;
+    }
 
     private void generarPersonalRemoto( List<PersonalRemoto> prList, List<PersonalDto> personal, List<Date> fechas){
         for( PersonalDto p : personal ){
