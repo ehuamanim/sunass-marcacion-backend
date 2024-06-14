@@ -24,33 +24,53 @@ import java.util.Date;
             @ColumnResult(name = "userReg"),
             @ColumnResult(name = "nroDoc"),
             @ColumnResult(name = "modalidadId"),
-            @ColumnResult(name = "condicionesId")
+            @ColumnResult(name = "condicionesId"),
+            @ColumnResult(name = "fecReg")
         }
     )
 )
 @NamedNativeQuery(
-    name = "findActividadesAsignadas",
-    query = "SELECT "
-            + " pa.\"item\"        AS item, "
-            + " pa.\"personal_id\" AS personalId, "
-            + " pa.\"actividad_id\"    AS actividadId, "
-            + " pa.\"fecha_inicio\" AS fechaInicio, "
-            + " a.\"descripcion\"   AS actividad, "
-            + " pa.\"userReg\"      AS userReg, "
-            + " p.\"nro_doc\"       AS nroDoc, "
-            + " pa.\"modalidad_id\" AS modalidadId, "
-            + " pa.\"condiciones_id\" AS condicionesId "
-            + "FROM "
-            + " \"personal_actividad\" pa "
-            + "LEFT JOIN \"actividad\" a ON a.\"actividad_id\" = pa.\"actividad_id\"  "
-            + "LEFT JOIN \"personal\" p ON p.\"personal_id\" = pa.\"personal_id\"  "
-            + "WHERE 1=1  "
-            + " AND pa.\"fecha_inicio\" < SYSDATE "
-            + " AND pa.\"fecha_fin\" > SYSDATE "
-            + " AND (:personaId IS NULL OR pa.\"personal_id\" = :personaId) "
-            + "ORDER BY actividad",
-    resultSetMapping = "PersonalActividadDtoMapping"
-)
+	    name = "findActividadesAsignadas",
+	    query = "SELECT "
+	            + " pa.\"item\"        AS item, "
+	            + " pa.\"personal_id\" AS personalId, "
+	            + " pa.\"actividad_id\"    AS actividadId, "
+	            + " pa.\"fecha_inicio\" AS fechaInicio, "
+	            + " a.\"descripcion\"   AS actividad, "
+	            + " pa.\"userReg\"      AS userReg, "
+	            + " p.\"nro_doc\"       AS nroDoc, "
+	            + " pa.\"modalidad_id\" AS modalidadId, "
+	            + " pa.\"condiciones_id\" AS condicionesId, "
+	            + " pa.\"fecReg\"       AS fecReg "
+	            + "FROM "
+	            + " \"personal_actividad\" pa "
+	            + "LEFT JOIN \"actividad\" a ON a.\"actividad_id\" = pa.\"actividad_id\"  "
+	            + "LEFT JOIN \"personal\" p ON p.\"personal_id\" = pa.\"personal_id\"  "
+	            + "WHERE "
+	            + " pa.\"personal_id\" = :personalId "
+	            + "ORDER BY actividad",
+	    resultSetMapping = "PersonalActividadDtoMapping"
+	)
+
+@NamedNativeQuery(
+	    name = "updateActividadAsignada",
+	    query = "UPDATE \"personal_actividad\" SET " +
+	            "\"actividad_id\" = COALESCE(:actividadId, \"actividad_id\"), " +
+	            "\"personal_id\" = COALESCE(:personalId, \"personal_id\"), " +
+	            "\"fecha_inicio\" = COALESCE(:fechaInicio, \"fecha_inicio\"), " +
+	            "\"fecha_fin\" = COALESCE(:fechaFin, \"fecha_fin\"), " +
+	            "\"status\" = COALESCE(:status, \"status\"), " +
+	            "\"flag\" = COALESCE(:flag, \"flag\"), " +
+	            "\"userReg\" = COALESCE(:userReg, \"userReg\"), " +
+	            "\"fecReg\" = COALESCE(:fecReg, \"fecReg\"), " +
+	            "\"modalidad_id\" = COALESCE(:modalidadId, \"modalidad_id\"), " +
+	            "\"condiciones_id\" = COALESCE(:condicionesId, \"condiciones_id\"), " +
+	            "\"userMod\" = COALESCE(:userMod, \"userMod\"), " +
+	            "\"fecMod\" = COALESCE(:fecMod, \"fecMod\") " +
+	            "WHERE \"item\" = :item",
+	    resultClass = PersonalActividad.class
+	)
+
 public class PersonalActividad {
 
     @Id

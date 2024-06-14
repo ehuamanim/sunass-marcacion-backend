@@ -13,6 +13,7 @@ import pe.gob.sunass.marcacion.common.FechaUtil;
 import pe.gob.sunass.marcacion.dto.AsignacionPersonalRestIn;
 import pe.gob.sunass.marcacion.dto.BaseResponseDto;
 import pe.gob.sunass.marcacion.dto.MaestroRestOutDto;
+import pe.gob.sunass.marcacion.dto.PersonalActividadDto;
 import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.model.Personal;
 import pe.gob.sunass.marcacion.model.PersonalActividad;
@@ -168,5 +169,62 @@ public class PersonalService {
             paList.add(pa);
         }
     }
+    
+ // Nueva función: Obtener lista de asignaciones según personal_id
+    public List<PersonalActividadDto> getAssignmentsByPersonalId(String personalId) {
+        return personalActividadRepository.findPersonalActividadByNroDoc(personalId);
+    }
+
+ // Nueva función: Actualizar una asignación
+ // Nueva función: Actualizar una asignación
+    public BaseResponseDto updateAssignment(Long assignmentId, PersonalActividad updatedAssignment) {
+        BaseResponseDto response = new BaseResponseDto("200", "Actualización exitosa");
+        try {
+            PersonalActividad existingAssignment = personalActividadRepository.findById(assignmentId)
+                    .orElseThrow(() -> new RuntimeException("Asignación no encontrada"));
+
+            // Verificar y actualizar los campos que han cambiado en updatedAssignment
+            if (updatedAssignment.getActividadId() != null) {
+                existingAssignment.setActividadId(updatedAssignment.getActividadId());
+            }
+            if (updatedAssignment.getPersonalId() != null) {
+                existingAssignment.setPersonalId(updatedAssignment.getPersonalId());
+            }
+            if (updatedAssignment.getFechaInicio() != null) {
+                existingAssignment.setFechaInicio(updatedAssignment.getFechaInicio());
+            }
+            if (updatedAssignment.getFechaFin() != null) {
+                existingAssignment.setFechaFin(updatedAssignment.getFechaFin());
+            }
+            if (updatedAssignment.getStatus() != null) {
+                existingAssignment.setStatus(updatedAssignment.getStatus());
+            }
+            if (updatedAssignment.getFlag() != null) {
+                existingAssignment.setFlag(updatedAssignment.getFlag());
+            }
+            if (updatedAssignment.getUserReg() != null) {
+                existingAssignment.setUserReg(updatedAssignment.getUserReg());
+            }
+            if (updatedAssignment.getFecReg() != null) {
+                existingAssignment.setFecReg(updatedAssignment.getFecReg());
+            }
+            if (updatedAssignment.getModalidadId() != null) {
+                existingAssignment.setModalidadId(updatedAssignment.getModalidadId());
+            }
+            if (updatedAssignment.getCondicionesId() != null) {
+                existingAssignment.setCondicionesId(updatedAssignment.getCondicionesId());
+            }
+            if (updatedAssignment.getUserMod() != null) {
+                existingAssignment.setUserMod(updatedAssignment.getUserMod());
+            }
+            existingAssignment.setFecMod(new Date()); // Actualizar siempre la fecha de modificación
+
+            personalActividadRepository.save(existingAssignment);
+        } catch (Exception e) {
+            response = new BaseResponseDto("500", "Error en la actualización: " + e.getMessage());
+        }
+        return response;
+    }
+
 
 }

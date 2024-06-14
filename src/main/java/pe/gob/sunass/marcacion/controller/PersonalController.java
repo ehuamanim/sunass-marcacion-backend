@@ -1,5 +1,6 @@
 package pe.gob.sunass.marcacion.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import pe.gob.sunass.marcacion.dto.AsignacionPersonalRestIn;
 import pe.gob.sunass.marcacion.dto.BaseResponseDto;
 import pe.gob.sunass.marcacion.dto.FilterRestInRO;
+import pe.gob.sunass.marcacion.dto.PersonalActividadDto;
 import pe.gob.sunass.marcacion.dto.PersonalDto;
 import pe.gob.sunass.marcacion.facade.PersonalFacade;
 import pe.gob.sunass.marcacion.httpconnection.restin.AuthRestIn;
 import pe.gob.sunass.marcacion.model.Personal;
+import pe.gob.sunass.marcacion.model.PersonalActividad;
+import pe.gob.sunass.marcacion.repository.PersonalActividadRepository;
 import pe.gob.sunass.marcacion.service.PersonalService;
 
 @RestController
@@ -36,7 +40,7 @@ public class PersonalController {
 
     @Autowired
     private PersonalFacade personalFacade;
-
+    
     @PostMapping
     public ResponseEntity<List<PersonalDto>> listAll(
                         @RequestBody FilterRestInRO filter,
@@ -83,4 +87,31 @@ public class PersonalController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+    
+    @GetMapping("/asignaciones/{personalId}")
+    public ResponseEntity<List<PersonalActividadDto>> getAsignacionesByPersonalId(@PathVariable String personalId) {
+        try {
+            List<PersonalActividadDto> asignaciones = personalService.getAssignmentsByPersonalId(personalId);
+            return ResponseEntity.ok(asignaciones);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @PutMapping("/asignaciones/{personalId}/{assignmentId}")
+    public ResponseEntity<BaseResponseDto> updateAsignacion(
+            @PathVariable String personalId,
+            @PathVariable Long assignmentId,
+            @RequestBody PersonalActividad asignacionDto) {
+        try {
+            asignacionDto.setPersonalId(personalId); // Asignamos el personal_id al objeto si no viene en el body
+            asignacionDto.setItem(assignmentId); // Asignamos el assignmentId al objeto
+            BaseResponseDto response = personalService.updateAssignment(assignmentId, asignacionDto); // Llamada al servicio para actualizar la asignación
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            BaseResponseDto response = new BaseResponseDto("400", "Error al actualizar la asignación: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
 }

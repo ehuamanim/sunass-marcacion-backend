@@ -15,4 +15,5 @@ public class PersonalActividadDto {
 	private String nroDoc;
 	private String modalidadId;
 	private String condicionesId;
+	private Date fecReg;
 }
